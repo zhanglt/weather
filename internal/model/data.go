@@ -1,9 +1,12 @@
 package model
 
+import "time"
+
 type Weather_f struct {
-	Areaid  int     `json:"areaid"`
-	Type    string  `json:"type"`
-	Content Content `json:"content"`
+	Areaid  int       `json:"areaid"`
+	Type    string    `json:"type"`
+	Content Content   `json:"content"`
+	Date    time.Time `json:"date"`
 }
 type Content struct {
 	C C `json:"c"`
