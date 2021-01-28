@@ -2,6 +2,7 @@ package model
 
 import "time"
 
+// mongodb中原有数据的发序列化对象
 type Weather_f struct {
 	Areaid  int       `json:"areaid"`
 	Type    string    `json:"type"`
@@ -46,6 +47,8 @@ type F1 struct {
 	Fh string `json:"fh"` //晚上风力编号 0
 	Fi string `json:"fi"` //日出日落时间(中间用|分割)
 }
+
+// 新天气API接口数据的反序列化对象
 type Weather struct {
 	Data   Data   `json:"data"`
 	Status int    `json:"status"`

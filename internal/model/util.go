@@ -1,7 +1,8 @@
 package model
 
+// 风向标志转换
 func ConvertWind(name string) string {
-	//多条件判断
+
 	if name == "无持续风向" {
 		return "0"
 	} else if name == "东北风" {
@@ -24,8 +25,9 @@ func ConvertWind(name string) string {
 		return "9"
 	}
 }
+
+// 天气状况代码转换
 func ConvertWeather(name string) string {
-	//多条件判断
 	if name == "晴" {
 		return "00"
 	} else if name == "多云" {
