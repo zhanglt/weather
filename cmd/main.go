@@ -1,5 +1,6 @@
 package main
 
+//0 */2 * * * date >> /home/qw/weather
 import (
 	"time"
 
@@ -10,7 +11,9 @@ import (
 var logger = model.GetLogger()
 
 func main() {
+
 	client, ctx := model.GetDbClient()
+	defer client.Close(ctx)
 	logger.Println("-----开始同步：", time.Now(), "-----")
 	t1 := time.Now()
 	for name, area := range model.Areaid {
