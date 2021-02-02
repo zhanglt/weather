@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -13,15 +14,12 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-var logger = GetLogger()
-var client, ctx = GetDbClient()
-
 // 从天气预报API获取数据并发序列化到 stuct对象
-func getWeatherNew(area int) (Weather, error) {
+func getWeatherNew(area int, conf *Config, logger *log.Logger) (Weather, error) {
 
 	var wn Weather
 	var err error
-	res, err := http.Get(WeatherURL + strconv.Itoa(area))
+	res, err := http.Get(conf.Service.APIHost + strconv.Itoa(area))
 	if err != nil {
 
 		logger.Println("获取天气信息错误，区域编码：", area, "错误信息：", err)
@@ -43,7 +41,7 @@ func getWeatherNew(area int) (Weather, error) {
 
 // getWeatherF 从mongo读取对应area的数据条目，并发序列化到struc对象
 
-func getWeatherF(ctx context.Context, client *qmgo.QmgoClient, area int) (Weather_f, error) {
+func getWeatherF(ctx context.Context, client *qmgo.QmgoClient, area int, logger *log.Logger) (Weather_f, error) {
 	var wf Weather_f
 	var err error
 	filter := bson.M{"areaid": area}        //查询条件
@@ -61,9 +59,10 @@ func getWeatherF(ctx context.Context, client *qmgo.QmgoClient, area int) (Weathe
 }
 
 // UpdateWeather 利用天气api获取的数据，更新mongdb数据对象，并更新写入mongo数据库
-func UpdateWeather(ctx context.Context, client *qmgo.QmgoClient, area int) (Weather_f, error) {
-	wn, er := getWeatherNew(area)
-	wf, err := getWeatherF(ctx, client, area)
+func UpdateWeather(ctx context.Context, client *qmgo.QmgoClient, conf *Config, area int, logger *log.Logger) (Weather_f, error) {
+
+	wn, er := getWeatherNew(area, conf, logger)
+	wf, err := getWeatherF(ctx, client, area, logger)
 	if er != nil || err != nil {
 		logger.Println("wn或者wf获取错误:", er, err, area)
 		return wf, errors.New("wn或者wf获取错误")

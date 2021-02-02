@@ -2,23 +2,22 @@ package main
 
 //0 */2 * * * date >> /home/qw/weather
 import (
+	"context"
+	"log"
 	"time"
 
+	"github.com/qiniu/qmgo"
 	"github.com/zhanglt/weather/internal/model"
+	"go.uber.org/fx"
 	"gopkg.in/mgo.v2/bson"
 )
 
-var logger = model.GetLogger()
-
-func main() {
-
-	client, ctx := model.GetDbClient()
-	defer client.Close(ctx)
-	logger.Println("-----开始同步：", time.Now(), "-----")
+func bootInvoke(ctx context.Context, client *qmgo.QmgoClient, conf *model.Config, logger *log.Logger) {
 	t1 := time.Now()
-	for name, area := range model.Areaid {
+	count := 0
+	for name, area := range conf.Area.Area {
 		filter := bson.M{"areaid": area} //查询条件
-		up, ok := model.UpdateWeather(ctx, client, area)
+		up, ok := model.UpdateWeather(ctx, client, conf, area, logger)
 		if ok != nil {
 			logger.Println("更新错误：", name, area, ok)
 		} else {
@@ -26,10 +25,22 @@ func main() {
 			if err != nil {
 				logger.Println("更新失败错误信息：", area, "|", err)
 			}
-			logger.Println("更新信息：", area, result.MatchedCount, ":", result.ModifiedCount, ":", result.UpsertedCount)
+			count++
+			if conf.Writable.LogLevel == "DEBUG" {
+				logger.Println("更新信息：", area, result.MatchedCount, ":", result.ModifiedCount, ":", result.UpsertedCount)
+			}
 		}
 
 	}
 	t2 := time.Now()
-	logger.Println("=====结束同步：", time.Now(), "=====", t2.Sub(t1))
+	logger.Println(time.Now().Format("2006/1/2 15:04:05"), "共同步：", count, "条数据,用时：", t2.Sub(t1))
+
+}
+func main() {
+	fx.New(
+		fx.Provide(model.ProvideConfig),
+		fx.Provide(model.ProvideLog),
+		fx.Provide(model.ProvideDbClient),
+		fx.Invoke(bootInvoke),
+	)
 }

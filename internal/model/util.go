@@ -1,6 +1,32 @@
 package model
 
 // 风向标志转换
+func ConvertWind1(name string) string {
+	switch name {
+	case "无持续风向":
+		return "0"
+	case "东北风":
+		return "1"
+	case "东风":
+		return "2"
+	case "东南风":
+		return "3"
+	case "南风":
+		return "4"
+	case "西南风":
+		return "5"
+	case "西风":
+		return "6"
+	case "西北风":
+		return "7"
+	case "北风":
+		return "8"
+	default:
+		return "9"
+	}
+}
+
+// 风向标志转换
 func ConvertWind(name string) string {
 
 	if name == "无持续风向" {
