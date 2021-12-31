@@ -3,7 +3,8 @@ package main
 import (
 	"fmt"
 
-	"github.com/edgexfoundry/go-mod-bootstrap/di"
+	"github.com/zhanglt/weather/di"
+	//"github.com/edgexfoundry/go-mod-bootstrap/di"
 )
 
 type foo struct {
@@ -31,7 +32,7 @@ func NewBar(m string, foo *foo) *bar {
 }
 
 func main() {
-    di.	
+
 	container := di.NewContainer(
 		di.ServiceConstructorMap{
 			"foo": func(get di.Get) interface{} {
